@@ -1,38 +1,18 @@
-name: SAST Scan with Semgrep
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-permissions:
-  security-events: write  # Needed for SARIF upload
-
+name: Semgrep Code Scan
+on: [push]  # Trigger on every push event to this repo
 jobs:
-  semgrep:
-    name: Run Semgrep SAST
+  semgrep-scan:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Install Semgrep
-      run: pip install semgrep
-
-    - name: Run Semgrep with OWASP Top 10 rules
-      run: semgrep --config=p/owasp-top-ten --sarif --output=semgrep.sarif
-
-    - name: Upload SARIF to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: semgrep.sarif
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'        # Set up Node.js (using Node 18 LTS)
+      - name: Install dependencies
+        run: npm install            # Install Node.js project dependencies
+      - name: Build the app (optional)
+        run: npm run build --if-present  # Build the app, if a build script is defined
+      - name: Install Semgrep
+        run: pip3 install semgrep   # Install Semgrep via pip (Python package manager)
+      - name: Run Semgrep scan
+        run: semgrep --config auto .  # Run Semgrep code scan with automatic rules
