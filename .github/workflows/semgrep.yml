@@ -15,4 +15,4 @@ jobs:
       - name: Install Semgrep
         run: pip3 install semgrep   # Install Semgrep via pip (Python package manager)
       - name: Run Semgrep scan
-        run: semgrep --config auto .  # Run Semgrep code scan with automatic rules
+        run: semgrep --config p/owasp-top-ten .  # Use OWASP Top 10 rules
