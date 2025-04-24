@@ -1,18 +1,31 @@
 name: Semgrep Code Scan
-on: [push]  # Trigger on every push event to this repo
+
+on:
+  push:
+    branches: [main]  # or whatever branch you're using
+  pull_request:       # This enables PR annotations
+
 jobs:
   semgrep-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # REQUIRED for annotations in PRs
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'        # Set up Node.js (using Node 18 LTS)
+          node-version: '18'  # Node.js setup for your project
+
       - name: Install dependencies
-        run: npm install            # Install Node.js project dependencies
+        run: npm install
+
       - name: Build the app (optional)
-        run: npm run build --if-present  # Build the app, if a build script is defined
-      - name: Install Semgrep
-        run: pip3 install semgrep   # Install Semgrep via pip (Python package manager)
-      - name: Run Semgrep scan
-        run: semgrep --config p/owasp-top-ten .  # Use OWASP Top 10 rules
+        run: npm run build --if-present
+
+      - name: Run Semgrep with PR Annotations
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/owasp-top-ten
